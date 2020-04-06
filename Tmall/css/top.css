@@ -1,0 +1,149 @@
+body{
+	margin: 0;
+	font-family: "微软雅黑";
+	/* overflow-x: hidden; */
+}
+
+#top{
+	border-bottom: 1px solid #e5e5e5;
+	width: 100%;
+	height: 32px;
+	/* 高32 */
+	line-height: 32px;
+	background: #f2f2f2;
+	color: #999;
+	font-size: 12px;
+}
+
+#nav{
+	width: 1230px;
+	height: 32px;
+	margin: 0 auto;
+}
+
+#left a{
+	text-decoration: none;
+	margin-left: 15px;
+	color: #999;
+}
+
+#left a:hover{
+	color: #ff0036;
+}
+
+#left{
+	float: left;
+	/* 浮动使其处于同一行 */
+	width: 218px;
+}
+
+#right{
+	float: right;
+	width: 520px;
+}
+
+.menu{
+	float: left;
+	width: 84px;
+	height: 32px;
+	text-align: center;
+	position: relative;
+}
+
+.menu a{
+	text-decoration: none;
+	color: #999;
+}
+
+.menu a:hover{
+	color: #ff0036;
+	text-decoration: underline;
+}
+
+.menuDown a{
+	display: block;
+	padding: 0 5px;
+}
+
+.menuDown{
+	background: #fff;
+	width: 95px;
+	border: 1px solid #e5e5e5;
+	position: relative;
+	/* 隐藏 */
+	top: -1px;
+	display: none;
+}
+
+.menuTop:hover>a{
+	background: #fff;
+	display: block;
+	border-left: 1px solid #E5E5E5;
+	border-right: 1px solid #E5E5E5;
+	position: relative;
+	/* 层级z-index:1 */
+	/* z-index: 1; */
+}
+
+#phone .menuDown{
+	width: 175px;
+	height: 230px;
+	position: relative;
+	left: -45px;
+	border: none;
+	/* 元素阴影 */
+	box-shadow: 0 0 5px #999;
+}
+
+#phone .menuDown:after{
+	content: "";
+	border-top: 7px solid transparent;
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+	border-bottom: 7px solid #fff;
+	position: relative;
+	top: -269px;
+}
+
+
+/* 收藏夹三角变换 */
+a:hover .triDown{
+    /* -webkit-transform:rotate(180deg); */
+    transform:rotate(180deg);
+    /* -webkit-transition:-webkit-transform 1s linear; */
+    /* transition:transform 0.2s linear; */
+    transition: 0.2s;
+}
+
+
+#support ul{
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+#support li{
+	float: left;
+	margin-left: 8px;
+}
+
+#support .menuDown{
+	width: 135px;
+	height: 165px;
+	position: relative;
+	right: 53px;
+}
+
+#support p{
+	margin: 0;
+	text-align: left;
+	padding: 0 12px 0;
+	font-weight: bold;
+}
+
+/* 点击一级菜单显示二级菜单 */
+.menu:hover .menuDown{
+	/* 转为块状元素就显示了 */
+	display: block;
+}	
+
