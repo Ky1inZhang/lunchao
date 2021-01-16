@@ -8,6 +8,6 @@
 
 
 
-[Relife1-海崎新太(27)无业](https://lunchao666.github.io/jpg/Relife1)  &emsp;&emsp;&emsp; [Relife2-真没用](https://lunchao666.github.io/jpg/Relife2)
+[Relife1-海崎新太(27)无业](https://lunchao666.github.io/lunchao/jpg/Relife1)  &emsp;&emsp;&emsp; [Relife2-真没用](https://lunchao666.github.io/lunchao/jpg/Relife2)
 
  

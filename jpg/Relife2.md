@@ -7,5 +7,5 @@
 
 
 
-[Relife1-海崎新太(27)无业](https://lunchao666.github.io/jpg/Relife1) &emsp;&emsp;&emsp;
-  [Relife3-受试者](https://lunchao666.github.io/jpg/Relife3)
+[Relife1-海崎新太(27)无业](https://lunchao666.github.io/lunchao/jpg/Relife1) &emsp;&emsp;&emsp;
+  [Relife3-受试者](https://lunchao666.github.io/lunchao/jpg/Relife3)
