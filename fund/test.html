@@ -5,10 +5,13 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>每日基金</title>
 		<link rel="shortcut icon" href="favicon.ico">
-		<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<!-- <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 		<!-- <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.min.js"></script> -->
-		<script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/echarts/3.8.0/echarts-en.common.min.js"></script>
-		
+		<!-- <script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/echarts/3.8.0/echarts-en.common.min.js"></script> -->
+		<!-- <script type="text/javascript" src="echarts.min.js"></script> -->
+		<script src="https://cdn.bootcdn.net/ajax/libs/echarts/3.8.5/echarts.min.js"></script>
+		<!-- <script src="https://cdn.bootcdn.net/ajax/libs/echarts/4.0.0/echarts.min.js"></script> -->
+		<!-- <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.0/echarts.min.js"></script> -->
 		</script>
 		<script type="text/javascript">
 			
@@ -16,7 +19,7 @@
 	</head>
 	<body>
 		
-		<div id="chartmain" style="width:600px; height: 400px;"></div>
+		<div id="chartmain" style="width:80vw; height: 400px;"></div>
 	</body>
 	<script type="text/javascript">
 		var code = this.getQueryString("code") || '000339';
@@ -37,99 +40,90 @@
 		//https://www.cnblogs.com/Kathrine/p/13182353.html   ajax
 		
 		
-		
+		/**
+		 * data
+		 * Data_netWorthTrend 单位净值走势 Data_netWorthTrend    x: new Date(item.x).Format("yyyy-MM-dd");
+		 * Data_ACWorthTrend 累计净值走势 Data_ACWorthTrend		x: new Date(item[0]).Format("yyyy-MM-dd");
+		 * Data_grandTotal 累计收益率    Data_grandTotal[0].data   x :new Date(item[0]).Format("yyyy-MM-dd");
+		 */
 		document.getElementById("data").onload = function() {
-			console.log("code: "+ code +";\nstockCodes:"+stockCodes)
+			console.log("code: "+ code +";\nstockCodes:"+fS_name)
+			
+			var myChart = echarts.init(document.getElementById('chartmain'));
+			option = {
+			    title: {
+			        text: fS_name
+			    },
+			    tooltip: {
+			        trigger: 'axis'
+			    },
+				legend: {
+					data: ['单位净值', '累计净值']
+				},
+				//边距
+				grid: {
+					left: '3%',
+					right: '4%',
+					bottom: '3%',
+					containLabel: true
+				},
+			    xAxis: {
+			        data: Data_ACWorthTrend.map(function (item) {
+			            return new Date(item[0]).Format("yyyy-MM-dd");
+			            // return item[0];
+			        })
+			    },
+			    yAxis: {
+					type: "value",
+			        splitLine: {
+			            show: false
+			        }
+			    },
+			    toolbox: {
+			        feature: {
+			            saveAsImage: {}
+			        }
+			    },
+				dataZoom: [{
+					startValue: '2014-06-01'
+				}, {
+					type: 'inside'
+				}],
+			    series: [
+					{
+						name: '单位净值',
+						type: 'line',
+						data: Data_netWorthTrend.map(function (item) {
+						    return item.y;
+						})
+					},
+					{
+					    name: '累计净值',
+					    type: 'line',
+					    data: Data_ACWorthTrend.map(function (item) {
+					        return item[1];
+					    })
+					}
+				]
+			}
+			myChart.setOption(option);
+			
 		}
 		
-		var myChart = echarts.init(document.getElementById('chartmain'));
-		$.get('https://cdn.jsdelivr.net/gh/apache/incubator-echarts-website@asf-site/examples/data/asset/data/aqi-beijing.json', function (data) {
-		    myChart.setOption(option = {
-		        title: {
-		            text: '测试数据 Beijing AQI'
-		        },
-		        tooltip: {
-		            trigger: 'axis'
-		        },
-		        xAxis: {
-		            data: data.map(function (item) {
-		                return item[0];
-		            })
-		        },
-		        yAxis: {
-		            splitLine: {
-		                show: false
-		            }
-		        },
-		        toolbox: {
-		            left: 'center',
-		            feature: {
-		                dataZoom: {
-		                    yAxisIndex: 'none'
-		                },
-		                restore: {},
-		                saveAsImage: {}
-		            }
-		        },
-		        dataZoom: [{
-		            startValue: '2014-06-01'
-		        }, {
-		            type: 'inside'
-		        }],
-		        visualMap: {
-		            top: 10,
-		            right: 10,
-		            pieces: [{
-		                gt: 0,
-		                lte: 50,
-		                color: '#096'
-		            }, {
-		                gt: 50,
-		                lte: 100,
-		                color: '#ffde33'
-		            }, {
-		                gt: 100,
-		                lte: 150,
-		                color: '#ff9933'
-		            }, {
-		                gt: 150,
-		                lte: 200,
-		                color: '#cc0033'
-		            }, {
-		                gt: 200,
-		                lte: 300,
-		                color: '#660099'
-		            }, {
-		                gt: 300,
-		                color: '#7e0023'
-		            }],
-		            outOfRange: {
-		                color: '#999'
-		            }
-		        },
-		        series: {
-		            name: 'Beijing AQI',
-		            type: 'line',
-		            data: data.map(function (item) {
-		                return item[1];
-		            }),
-		            markLine: {
-		                silent: true,
-		                data: [{
-		                    yAxis: 50
-		                }, {
-		                    yAxis: 100
-		                }, {
-		                    yAxis: 150
-		                }, {
-		                    yAxis: 200
-		                }, {
-		                    yAxis: 300
-		                }]
-		            }
-		        }
-		    });
-		});
-		
+		Date.prototype.Format = function (fmt) { //author: meizz
+		    var o = {
+		        "M+": this.getMonth() + 1, //月份 
+		        "d+": this.getDate(), //日 
+		        "h+": this.getHours(), //小时 
+		        "m+": this.getMinutes(), //分 
+		        "s+": this.getSeconds(), //秒 
+		        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+		        "S": this.getMilliseconds() //毫秒 
+		    };
+		    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+		    for (var k in o)
+		    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+		    return fmt;
+		}    
 	</script>
 </html>
