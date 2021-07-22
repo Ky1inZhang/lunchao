@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>每日基金</title>
+	<link rel="shortcut icon" href="favicon.ico">
+	<!-- <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+	<script id="data" src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.min.js"></script>
+	<!-- <script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/echarts/3.8.0/echarts-en.common.min.js"></script> -->
+	<!-- <script type="text/javascript" src="echarts.min.js"></script> -->
+	<script id="echarts" src="https://cdn.bootcdn.net/ajax/libs/echarts/3.8.5/echarts.min.js"></script>
+	<!-- <script src="https://cdn.bootcdn.net/ajax/libs/echarts/4.0.0/echarts.min.js"></script> -->
+	<!-- <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.0.0/echarts.min.js"></script> -->
+	</script>
+	<script type="text/javascript">
+
+	</script>
+	<style>
+		button{
+			border:none;
+			width: 6rem; /* 宽度 */
+			height: auto; /* 高度 */
+			border-width: 0px; /* 边框宽度 */
+			border-radius: 2.0rem; /* 边框半径 */
+			background-color: white;
+			cursor: pointer; /* 鼠标移入按钮范围时出现手势 */
+			outline: none; /* 不显示轮廓线 */
+			font-family: Microsoft YaHei; /* 设置字体 */
+			color: gray; /* 字体颜色 */
+			font-size: 1rem; /* 字体大小 */
+		}
+	</style>
+</head>
+
+<body>
+
+	<div id="chartmain" style="width:37.5rem; height: 25rem;">
+
+
+	</div>
+	<div id="btn">
+		<button class="btn" value="1">近1月</button>
+		<button class="btn" value="2">近3月</button>
+		<button class="btn" value="3">近6月</button>
+		<button class="btn" value="4" style="background:#6699FF;color:white">近1年</button>
+		<button class="btn" value="5">近3年</button>
+		<button class="btn" value="6">全部</button>
+	</div>
+</body>
+<script type="text/javascript">
+		var month = [12,1,3,6,12,36,240];
+		var m = month[4]; // 初始为近1年
+
+		//https://www.cnblogs.com/Kathrine/p/13182353.html   ajax
+		axios.get('https://api.doctorxiong.club/v1/fund/detail', { 
+		// axios.get('http://localhost:3000/api/api', { 
+			params: {
+				code: this.getQueryString("code") || '000339', // id: 200,
+			},
+		}).then(response => {
+			// console.log(response.data.data); // 获取服务端提供的数据
+			this.draw(response.data.data)
+
+		}).catch(error => {  
+			//  成功后进入catch 原因   then 内部调用的代码错误被catch 所以不会显示异常信息 
+			//  https://www.jianshu.com/p/0781c10c8ac8
+			console.log("请求失败");
+			console.log(error.response);  // 获取错误信息
+		});
+	
+	function draw(data) {
+		var myChart = echarts.init(document.getElementById('chartmain'));
+		var {name, netWorthData ,totalNetWorthData}  = data
+		var [n,data1,data2] = [name,netWorthData,totalNetWorthData]
+		option = {
+			title: {
+				text: n
+			},
+			tooltip: {
+				trigger: 'axis'
+			},
+			legend: {
+				data: ['单位净值', '累计净值','变化幅度']
+			},
+			//边距
+			grid: {
+				left: '3%',
+				right: '4%',
+				bottom: '3%',
+				containLabel: true
+			},
+			xAxis: {
+				// data: data1.slice(data1.length +  ~20.83 * 12).map((item) => item[0])
+				data: data1.filter(item => minus(item[0],month[4])).map(item => item[0])
+			
+			},
+			yAxis: {
+				type: "value",
+				splitLine: {
+					show: true
+				}
+			},
+			toolbox: {
+				feature: {
+					saveAsImage: {}
+				},
+				dataZoomSelect: {
+
+				}
+			},
+			dataZoom: [
+				{
+					startValue: '2014-01-01',
+
+					// https://echarts.apache.org/examples/zh/editor.html?c=doc-example/tutorial-dynamic-data
+					// var base = +new Date(2014, 9, 3); var now = new Date(base);
+				},
+				{
+					type: 'inside'
+				}],
+			series: [
+				{
+					name: '单位净值',
+					type: 'line',
+					// data: data1.map(item => item[1])
+					data: data1.filter(item => minus(item[0],month[4])).map(item => item[1])
+				},
+				{
+					name: '累计净值',
+					type: 'line',
+					data: data2.filter(item => minus(item[0],month[4])).map(item => item[1])
+				},
+				{
+					name: '变化幅度',
+					type: 'line',
+					data: data1.filter(item => minus(item[0],month[4])).map(item => item[2])
+				}
+			]
+		}
+		myChart.setOption(option);
+
+		document.getElementById("btn").addEventListener('click', function (e) {
+			if(e.target.className == 'btn'){
+				
+					// $(".btn").css("background","white").css("color","gray")
+					[...document.getElementsByClassName("btn")].forEach(item => {
+							item.style.cssText ="background:white;color:gray";
+					});
+					e.target.style.cssText = 'background:#6699FF;color:white'
+					
+					// ["2014-03-28","0.998","0",""]
+					// option.dataZoom[0] = {startValue: '2019-01-01'}    86400000 * 30 = 0x9a7ec800
+					let i = e.target.value;
+					option.xAxis.data = filterData(data1,i,0);
+					option.series[0].data = filterData(data1,i,1);
+					option.series[1].data = filterData(data2,i,1);
+					option.series[2].data = filterData(data1,i,2);
+					myChart.setOption(option)
+			}
+		});
+
+	}
+	
+	// d data , i month[i] , n item[n]
+	function filterData(d ,i, n) {
+		return d.filter(item => minus(item[0],month[i])).map(item => item[n]);
+	}
+
+	function minus(item ,monthIndex) {
+		return new Date() - +new Date(item) <= 0x9a7ec800 * monthIndex
+	}  
+
+	// https://www.jianshu.com/p/708c915fb905
+	function getQueryString(name) {
+		let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+		let r = window.location.search.substr(1).match(reg);
+		if (r != null) {
+			return decodeURIComponent(r[2]);
+		};
+		return null;
+	}
+</script>
+
+</html>
