@@ -1,5 +1,5 @@
 		
-		var month = [30,90,180,365,365*3,365*10];
+		var month = [30, 90, 180, 365, 365 * 3, 365 * 10];
 		var nowDate = new Date(); 
 		// https://blog.csdn.net/lianflower/article/details/108804396 date
 		var lastDate = nowDate.setDate((nowDate.getDate() - 365));
