@@ -51,9 +51,9 @@
 
 			// 计算收益使用累计净值 
 			Data_ACWorthTrend.forEach((item, index) => {
-					if(index <= Data_netWorthTrend.length - 1) {
-						Data_netWorthTrend[index].y2 = item[1] == null ? 1 : item[1];
-					}
+				if (index <= Data_netWorthTrend.length - 1) {
+					Data_netWorthTrend[index].y2 = item[1] == null ? 1 : item[1];
+				}
 			});
 
 			Data_netWorthTrend.forEach((item,index) => {
