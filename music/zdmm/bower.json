@@ -1,0 +1,14 @@
+{
+  "name": "h5player",
+  "description": "\"一个基于H5制作的音乐播放器。\"",
+  "main": "index.js",
+  "authors": [
+    "hlerenow"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "dependencies": {
+    "Ionicons": "ionicons#^2.0.1",
+    "html5shiv": "^3.7.3"
+  }
+}
