@@ -15,7 +15,7 @@
             zdmmList[index] = {
                 title: temp[0],
                 source: [
-                    [temp[1], "audio/ogg"]
+                    [temp[1], "audio/mpeg"]
                 ],
                 actor: "紫襟",
                 lrc: ""
