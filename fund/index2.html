@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>每日基金</title>
+		<link rel="shortcut icon" href="favicon.ico">
+		<script src="https://cdn.bootcdn.net/ajax/libs/echarts/3.8.5/echarts.min.js"></script>
+		<script src="fund2.js"></script>
+	</head>
+	<style>
+		body{
+			overflow-x: hidden;
+			font: 14px Helvetica Neue,Helvetica,PingFang SC,\5FAE\8F6F\96C5\9ED1,Tahoma,Arial,sans-serif;
+		}
+		#div,#btn{
+			padding-left: 1%;
+		}
+		#btns > button{
+			border:none;
+			/* width: 6rem; 宽度 */
+			width: 15vw; /* 宽度 */
+			height: auto; /* 高度 */
+			border-width: 0px; /* 边框宽度 */
+			border-radius: 2.0rem; /* 边框半径 */
+			background-color: white;
+			cursor: pointer; /* 鼠标移入按钮范围时出现手势 */
+			outline: none; /* 不显示轮廓线 */
+			font-family: Microsoft YaHei; /* 设置字体 */
+			color: gray; /* 字体颜色 */dd
+		}
+		#btn{
+			padding-top: 2%;
+		}
+	</style>
+	<body>
+		<!-- <div id="chartmain" style="width:37.5rem; height: 25rem;"></div> -->
+		<div id="chartmain" style="padding-top: 2%; width:100vw; height: 20rem;"></div>
+		<div id="btns">
+			<button class="btn" value="1">近1月</button>
+			<button class="btn" value="2">近3月</button>
+			<button class="btn" value="3">近6月</button>
+			<button class="btn" value="4">近1年</button>
+			<button class="btn" value="5">近3年</button>
+			<button class="btn" value="6">全部</button>
+		</div>
+		<div id="btn">
+			<button id="btn1">上一个</button>
+			<button id="btn2">下一个</button>
+			<input type="text" placeholder="请输入基金代码" id="input">
+			<button id="btn3">切换</button>
+		</div>
+		<div id="div">
+		</div>
+	</body>
+	<script type="text/javascript">
+		
+		 
+	</script>
+</html>
