@@ -317,7 +317,10 @@
 
             var audio = document.getElementById("h5playerMatic"); 
             audio.addEventListener('error', function () {  
-                document.getElementById("h5-next").click();
+                var id = self.nowSongId + 1;
+                audio.src = "https://mp3.aikeu.com/13674/" + id + ".mp3";
+                audio.play();
+                // document.getElementById("h5-next").click();
             }, false);
 
             Hlib.addEvent(self.dom, 'progress', function (e) {
