@@ -45,17 +45,17 @@
 			// 先处理数据
 			time = Data_netWorthTrend[Data_netWorthTrend.length-1].x <= time ? Data_netWorthTrend[0].x : time;
 
-			// 股数 ，追跌(股数) ， 本金 每 1%追150 ,倍数 多少个150, 最大追跌盈利率 ,最大梭哈盈利率,lr 利润
-			[gs, zd, bj, bs, gmcs, fh , lr ] = [0, 0, 0, 1, 0, 0 ,0];
-			[x , a , b , c , d ,e , f , g , h , j] = [[],[],[],[],[],[],[],[],[],[]];
+			// 股数 ，追跌(股数) ， 本金 每 1%追150 ,倍数 多少个150, 最大追跌盈利率 ,最大梭哈盈利率,lr 利润 ,三十日最大净值 
+			[gs, zd, bj, bs, gmcs, fh , lr ,max , min] = [0, 0, 0, 1, 0, 0 , 0, 0];
+			// lrs 利润(金额)  三十日内净值数组
+			[x , a , b , c , d ,e , f , g , h , j ,lrs ,jzsz] = [[],[],[],[],[],[],[],[],[],[],[],[]];
 
-			// 计算收益使用累计净值 
 			Data_ACWorthTrend.forEach((item, index) => {
 				if (index <= Data_netWorthTrend.length - 1) {
 					Data_netWorthTrend[index].y2 = item[1] == null ? 1 : item[1];
 				}
 			});
-
+			max = 0;
 			Data_netWorthTrend.forEach((item,index) => {
 				if (item.x >= time && item.x <= endTime){
 					fh = item.unitMoney.substring(8, item.unitMoney.length - 1) || 0;
@@ -64,17 +64,44 @@
 					a.push(echarts.format.formatTime('yyyy-MM-dd', item.x));
 					b.push(item.y);
 					c.push(item.equityReturn);
-					if (item.equityReturn < -3) {
+
+					if(jzsz.length < 30){
+						jzsz.push(item.y2);
+					} else{
+						jzsz.shift();
+						jzsz.push()
+					}
+					max = Math.max(...jzsz);
+					min = Math.min(...jzsz);
+					
+					//   两个参数  -1 , 1.175   
+					if (item.equityReturn < -0.5 && max/item.y2 > 1.17) {
 						zd += 100 * bs / item.y;
 						bj += 100 * bs;
 						gmcs += 1;
 					} 
+					//if (item.equityReturn < -0. && item.y2/jzsz[18]  < 1.04) {
+					// 129.36% ↑:196.75% ↓:-6.01% 
+					// 141.16% ↑:228.02% ↓:-6.52%    000336 
+					// 164 268 -6.1
+
+					// 161.42% ↑:248.7% ↓:-10.52%
+					// 199.61% ↑:323.8% ↓:-10.35%  002190   
+					// 206.74% ↑:331.77% ↓:-2.86% 	 
+					//  小于三十日内 18 的 处于下跌趋势 跌了买   大于18的下跌趋势 要五日内反弹
+					else if (item.equityReturn < -0.5 && item.y2/jzsz[5]  < 1.035) {
+						zd += 100 * bs / item.y;
+						bj += 100 * bs;
+						gmcs += 1;
+					}
+					
 					// if (item.equityReturn > 1 && zd > 30) {
 					// 	zd -= 10;
 					// 	lr += 10 * item.y;
 					// }
-					d.push((zd * item.y + lr).toFixed(2));
+					d.push((zd * item.y).toFixed(2));
 					// lr = 0;
+					lrs.push((zd * item.y - bj).toFixed(2));
 					e.push(bj);
 					g.push(bj != 0 ? (100 * (zd * item.y / bj - 1)).toFixed(2) : 0);
 				}
@@ -89,6 +116,16 @@
 			})
 			
 			var myChart = echarts.init(document.getElementById('chartmain'));
+
+			// 绑定滑动事件
+			myChart.on('datazoom',function(params){
+				console.log(params);//里面存有代表滑动条的起始的数字
+				let xAxis=myChart.getModel().option.xAxis[0];//获取axis
+				console.log(xAxis.data);//axis的标号数据
+				console.log(xAxis.rangeStart);//滑动条左端对应在xAxis.data的索引
+				console.log(xAxis.rangeEnd);//滑动条右端对应在xAxis.data的索引
+			});
+		
 			option = {
 			    title: {
 			        text: "\n" + fS_name,
@@ -98,7 +135,7 @@
 			        trigger: 'axis',
 			    },
 				legend: {
-					data: ['单位净值', '累计净值',"变化","梭哈","追跌","本金"]
+					data: ['单位净值', '累计净值',"变化","梭哈","追跌","本金","利润"]
 				},
 				grid: {
 					left: '0%',
@@ -166,6 +203,11 @@
 					    type: 'line',
 							data: h,
 						
+					},
+					{
+						name: '利润',
+						type: 'line',
+						data: lrs,
 					}
 				]
 			}
@@ -197,20 +239,20 @@
 			myChart.setOption(option);
 			
 			myChart.on('click', function (params) {
-				location.href = `${location.origin}/fund/index.html?code=${(Number(r[index])).toString().padStart(6,'0')}&start=${params.name}`
+				location.href = `${location.origin}/fund/index.html?code=${(Number(r[index])).toString().padStart(6,'0')}&start=${params.name}&end=${end}`
 			});
 
 			// 浏览器自适应
 			window.onresize = myChart.resize; 
 			document.getElementById("btn1").addEventListener("click",function(){
-				location.href = `${location.origin}/fund/index.html?code=${(Number(r[index-1])).toString().padStart(6,'0')}&start=${start}`
+				location.href = `${location.origin}/fund/index.html?code=${(Number(r[index-1])).toString().padStart(6,'0')}&start=${start}&end=${end}`
 			});
 			document.getElementById("btn2").addEventListener("click",function(){
-				location.href = `${location.origin}/fund/index.html?code=${(Number(r[index+1])).toString().padStart(6,'0')}&start=${start}`
+				location.href = `${location.origin}/fund/index.html?code=${(Number(r[index+1])).toString().padStart(6,'0')}&start=${start}&end=${end}`
 			});
 			document.getElementById("btn3").addEventListener("click",function(){
 				var input = document.getElementById("input").value || code;
-				location.href = `${location.origin}/fund/index.html?code=${input}&start=${start}`
+				location.href = `${location.origin}/fund/index.html?code=${input}&start=${start}&end=${end}`
 			});
 
 			document.getElementById("input").onkeypress = function(e){
