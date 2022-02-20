@@ -316,11 +316,17 @@
             })
 
             var audio = document.getElementById("h5playerMatic"); 
+            //加载错误换源
             audio.addEventListener('error', function () {  
                 var id = self.nowSongId + 1;
                 audio.src = "https://mp3.aikeu.com/13674/" + id + ".mp3";
-                audio.play();
                 // document.getElementById("h5-next").click();
+                audio.play();
+            }, false);
+
+            //自动播放下一曲 模拟点击
+            audio.addEventListener('ended', function () {  
+                document.getElementById("h5-next").click();
             }, false);
 
             Hlib.addEvent(self.dom, 'progress', function (e) {
