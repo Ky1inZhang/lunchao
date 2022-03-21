@@ -1,7 +1,7 @@
 		
 		var month = [30, 90, 180, 365, 365 * 3, 365 * 10];
 		var nowDate = new Date(); 
-		// https://blog.csdn.net/lianflower/article/details/108804396 date
+		// https://blog.csdn.net/lianflower/article/details/108804396 date 
 		var lastDate = nowDate.setDate((nowDate.getDate() - 365));
 		var start = this.getQueryString("start") || echarts.format.formatTime('yyyy-MM-dd', lastDate);
 		var end = this.getQueryString("end") || echarts.format.formatTime('yyyy-MM-dd', new Date());
