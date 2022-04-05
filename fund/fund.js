@@ -49,7 +49,7 @@
 			[gs, zd, bj, bs, gmcs, fh] = [0, 0, 0, 1, 0, 0];
 			[x , a , b , c , d ,e , f , g , h , j] = [[],[],[],[],[],[],[],[],[],[]];
 
-			// 计算收益使用累计净值 
+			// 计算收益使用累计净值
 			Data_ACWorthTrend.forEach((item, index) => {
 				if (index <= Data_netWorthTrend.length - 1) {
 					Data_netWorthTrend[index].y2 = item[1] == null ? 1 : item[1];
