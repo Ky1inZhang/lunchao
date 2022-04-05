@@ -55,7 +55,7 @@
 					Data_netWorthTrend[index].y2 = item[1] == null ? 1 : item[1];
 				}
 			});
-
+			
 			Data_netWorthTrend.forEach((item,index) => {
 				if (item.x >= time && item.x <= endTime){
 					fh = item.unitMoney.substring(8, item.unitMoney.length - 1) || 0;
