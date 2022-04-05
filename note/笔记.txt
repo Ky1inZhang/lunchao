@@ -1,2 +1,7 @@
+fatal: unable to access 'https://github.com/username/project.git/': OpenSSL SSL_read: Connection was reset
+
 vscode  使用git   github 使用令牌登录
 https://zhuanlan.zhihu.com/p/401978754 
+
+Github默认分支由master变更为main
+https://zhuanlan.zhihu.com/p/394010183
