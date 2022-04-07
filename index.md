@@ -1,8 +1,8 @@
 ## Welcome to GitHub Pages
 
-[每日基金](https://lunchao.pages.dev/fund)
+[每日基金](https://web.lunc.tk/fund)
 
-You can use the [editor on GitHub](https://github.com/lunchao666/lunchao666.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
+[藏地密码](https://web.lunc.tk/music/zdmm)
 
 Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
