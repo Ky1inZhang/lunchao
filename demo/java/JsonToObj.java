@@ -20,31 +20,31 @@ public class JsonToObj {
 
 		long strat = System.currentTimeMillis();
 
-		// getContent();
-		// fastJson();
 		// jsonToBean();
 		getKeys();
 		long end = System.currentTimeMillis();
 		System.err.println("fastJson :" + (end - strat));
 
-		for (Integer key : setsMap.keySet()) {
-			System.err.println("=======");
-			Set<String> set = setsMap.get(key);
-			for (String str : set) {
-				// System.out.println(key + "==" + str);
-				System.out.println("private String " + str + ";");
-			}
-
-		}
 	}
 
 	public static void getKeys() {
-
-		final String jsonStr = Test2.doPost(
-				"http://127.0.0.1:4523/m1/520105-0-default/contents", null,
-				null);
+		String url = "";
+		// url = "http://127.0.0.1:4523/m1/520105-0-default/detail";
+		url = "http://127.0.0.1:4523/m1/520105-0-default/contents";
+		final String jsonStr = Test2.doPost(url, null, null);
 		// .JSONException: Missing value. at character 1 o
-		getKeys(jsonStr);// 处理转义
+		// 抛出异常时删除 转义符
+		// 取得所有键名字
+		getKeys(jsonStr);
+
+		// 输出json转对象的分层model代码 // 输出键名
+		for (Integer key : setsMap.keySet()) {
+			System.err.println("==============");
+			Set<String> set = setsMap.get(key);
+			for (String str : set) {
+				System.out.println("private String " + str + ";");
+			}
+		}
 	}
 
 	@SuppressWarnings("boxing")
@@ -61,45 +61,22 @@ public class JsonToObj {
 			JSONObject jsonObj = JSONObject.fromObject(jsonStr);
 			Set keySet = jsonObj.keySet();
 			for (Object key : keySet) {
-				// 输出对象属性
+				// 输出对象属性 只输出一次
 				if (map.get(map.size()).equals(false)) {
 					System.out.println(keySet);
 					setsMap.put(map.size(), keySet);
 					map.put(map.size(), true);
 				}
 				// System.out.println(map.size() + ":" + key);
-				Object object = jsonObj.get(key);
-				String jsonStr2 = object.toString();
+				String jsonStr2 = jsonObj.get(key).toString();
 				if (jsonStr2.contains(",")) {
+					// if (jsonStr2.indexOf("{") == 0 || jsonStr2.indexOf("[")
+					// == 0) {
 					getKeys(jsonStr2);
 				}
-
 			}
 		}
 
-	}
-
-	public static String fastJson() {
-
-		long strat = System.currentTimeMillis();
-		final String jsonStr = Test2.doGet(
-				"http://127.0.0.1:4523/m1/520105-0-default/getJsonObj", null,
-				null);
-		A studentFromJson = JsonUtils.parseJsonToObj(jsonStr, A.class);
-		System.out.println(studentFromJson);
-		long end = System.currentTimeMillis();
-		System.out.println("fastJson :" + (end - strat));
-		return null;
-	}
-
-	public static String getContent() {
-		final String jsonStr = Test2.doPost(
-				"http://127.0.0.1:4523/m1/520105-0-default/contents", null,
-				null);
-		JSONObject jsonObj = JSONObject.fromObject(jsonStr);
-		System.out.println(jsonObj);
-		JSONArray string = jsonObj.getJSONObject("data").getJSONArray("data");
-		return null;
 	}
 
 	public static A jsonToBean() {
@@ -138,7 +115,7 @@ public class JsonToObj {
 		// Step 5: 验证一下
 		System.out.println(aObj);
 
-		// fastjson 方法
+		// fastjson 方法 fastjson json转对象不需要map配置项
 		com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(jsonStr);
 		A a = JSON.toJavaObject(jsonObject, A.class);
 		System.err.println(a);
