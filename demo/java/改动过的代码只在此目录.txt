@@ -1,0 +1,57 @@
+新增文件
+	FilenetFileDownloader.java 
+新增方法
+	FilenetAction 
+		com.kts.km.fn.FilenetAction.downloadByFolderId(String)
+		
+	/**
+	 * 根据目录id下载目录下所有文件
+	 * @param parentId
+	 */
+	@RequestMapping(value = "/downloadByFolderId")
+	public @ResponseBody String downloadByFolderId(@RequestParam("parentId") String parentId) {
+		String localPath;
+		try {
+			ObjectStoreProvider osp = new ObjectStoreProvider();
+			ObjectStore os = osp.getObjectStore();
+			// 获取父目录
+			Folder folder = osp.fetchFolderFromPath(os, parentId);
+			// 本地目录
+			localPath = FilenetFileDownloader.localPath + File.separator + folder.get_FolderName();
+			// 递归遍历目录结构并下载文件
+			FilenetFileDownloader.traverseFolders(folder, localPath);
+			System.out.println("下载完成");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "下载异常";
+		}
+		return "下载完成：" + localPath;
+	}
+	
+新增 index.js  273-297
+
+	/**
+	 * 下载选定fileNet目录下所有文件
+	 * fn_downloadFileNet
+	 */
+	function fn_downloadFileNet(){
+		if (!_selFNNode){
+			$.messager.alert("提示", "请选择一个FileNet父目录！");
+			return false;
+		}
+		$.ajax({
+			  type: 'POST',
+			  url: ctx + "/filenet/downloadByFolderId",
+			  data: "parentId=" + _selFNNode.id,
+			  success: fn_downloadFileNetSuccess,
+			  error: fn_error,
+			  dataType: "json"
+		});
+	}
+	
+	function fn_downloadFileNetSuccess(data, textStatus){
+		$.messager.alert("提示", data);
+	}
+
+新增index.jsp 30
+	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="fn_downloadFileNet()">下载FileNet目录文件</a>
