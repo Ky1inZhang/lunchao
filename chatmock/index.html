@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body, html {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        /* 总体 */
+        .wechat {
+            height: 100vh;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: #f5f5f5;
+            position: relative;
+        }
+        
+        /* 头部 */
+        .header {
+            font-size: 17px;
+            font-weight: 500;
+            height: 44px;
+            text-align: center;
+            line-height: 44px;
+            background: #ededed;
+            border-bottom: 1px solid #e0e0e0;
+            z-index: 10;
+            color: #000;
+            position: relative;
+        }
+        
+        .searching {
+            position: absolute;
+            right: 45px;
+            top: 13px;
+            opacity: 0.8;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .adding {
+            position: absolute;
+            right: 15px;
+            top: 13px;
+            opacity: 0.8;
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* 内容 */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 50px;
+            background-color: #fff;
+        }
+        
+        .friends {
+            position: relative;
+            height: 64px;
+            background: #ffffff;
+            border-bottom: 1px solid #f2f2f2;
+            display: flex;
+            align-items: center;
+        }
+        
+        .friends a {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            text-decoration: none;
+            color: #000;
+            position: relative;
+        }
+        
+        img.avatar {
+            height: 48px;
+            width: 48px;
+            margin-left: 12px;
+            border-radius: 4px;
+            object-fit: cover; /* 确保图片不变形 */
+            background-color: #f2f2f2; /* 图片加载前的背景色 */
+        }
+        
+        .info {
+            margin-left: 10px;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .name {
+            font-size: 16px;
+            color: #000;
+            margin-bottom: 4px;
+        }
+        
+        .message {
+            font-size: 14px;
+            color: #888;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .time {
+            font-size: 12px;
+            color: #b2b2b2;
+            position: absolute;
+            right: 12px;
+            top: 16px;
+        }
+        
+        .badge {
+            position: absolute;
+            right: 12px;
+            bottom: 16px;
+            background-color: #f43530;
+            color: white;
+            font-size: 12px;
+            height: 18px;
+            min-width: 18px;
+            line-height: 18px;
+            text-align: center;
+            border-radius: 9px;
+            padding: 0 4px;
+        }
+        
+        /* 底部导航 */
+        .footer {
+            height: 50px;
+            background-color: #f7f7f7;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .tab.active {
+            color: #07c160;
+        }
+        
+        .tab-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 2px;
+            opacity: 0.8;
+        }
+        
+        /* 控制面板 */
+        .control-panel {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: none;
+        }
+        
+        .control-panel button {
+            background-color: #07c160;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            margin: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .control-panel label {
+            display: block;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .control-panel input[type="number"] {
+            width: 60px;
+            padding: 3px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .control-panel select {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .show-panel {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background-color: #07c160;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 99;
+        }
+    </style>
+</head>
+<body>
+    <!-- 总体 -->
+    <div class="wechat">
+        <!-- 头部 -->
+        <div class="header">
+            微信
+            <svg class="searching" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M21 21L16.65 16.65" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="adding" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="#333" stroke-width="2"/>
+                <line x1="12" y1="8" x2="12" y2="16" stroke="#333" stroke-width="2"/>
+                <line x1="8" y1="12" x2="16" y2="12" stroke="#333" stroke-width="2"/>
+            </svg>
+        </div>
+        <!-- 头部 -->
+        <!-- 内容 -->
+        <div class="content">
+            <div id="contact-list">
+                <!-- 联系人列表将通过JavaScript动态加载 -->
+            </div>
+        </div>
+        <!-- 内容 -->
+        <!-- 底部导航 -->
+        <div class="footer">
+            <div class="tab active">
+                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 11.5C21.0034 12.8199 20.6951 14.1219 20.1 15.3C19.3944 16.7118 18.3098 17.8992 16.9674 18.7293C15.6251 19.5594 14.0782 19.9994 12.5 20C11.1801 20.0035 9.87812 19.6951 8.7 19.1L3 21L4.9 15.3C4.30493 14.1219 3.99656 12.8199 4 11.5C4.00061 9.92179 4.44061 8.37488 5.27072 7.03258C6.10083 5.69028 7.28825 4.6056 8.7 3.90003C9.87812 3.30496 11.1801 2.99659 12.5 3.00003H13C15.0843 3.11502 17.053 3.99479 18.5291 5.47089C20.0052 6.94699 20.885 8.91568 21 11V11.5Z" stroke="#07c160" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>微信</span>
+            </div>
+            <div class="tab">
+                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>通讯录</span>
+            </div>
+            <div class="tab">
+                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 14C8 14 9.5 16 12 16C14.5 16 16 14 16 14" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 9H9.01" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15 9H15.01" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>发现</span>
+            </div>
+            <div class="tab">
+                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>我</span>
+            </div>
+        </div>
+        <!-- 底部导航 -->
+    </div>
+    <!-- 总体 -->
+    
+    <!-- 测试控制面板 -->
+    <button class="show-panel">⚙️</button>
+    <div class="control-panel">
+        <label>
+            自动生成消息间隔(秒):
+            <input type="number" id="auto-message-interval" min="1" max="60" value="10">
+        </label>
+        <label>
+            选择联系人:
+            <select id="contact-selector">
+                <!-- 联系人选项将通过JavaScript动态加载 -->
+            </select>
+        </label>
+        <button id="start-auto">开始自动生成消息</button>
+        <button id="stop-auto">停止自动生成消息</button>
+        <button id="generate-message">立即生成一条消息</button>
+        <button id="reset-data">重置所有数据</button>
+        <button id="close-panel">关闭</button>
+    </div>
+    
+    <!-- 引入数据文件 -->
+    <script src="data.js"></script>
+    
+    <script>
+        // 全局变量，移到顶部
+        let autoMessageInterval = null;
+        
+        // 注意：自动消息生成的状态保存在 localStorage 中，通过 DataManager.setAutoMessageConfig 和 DataManager.getAutoMessageConfig 方法管理
+        // 这样即使页面重新加载，状态也不会丢失，可以正确地从 localStorage 中恢复
+        // 从聊天页面返回到联系人列表页面时，自动消息生成的状态会被正确地恢复
+        
+        // 动态加载联系人列表
+        function loadContacts() {
+            const contactList = document.getElementById('contact-list');
+            contactList.innerHTML = ''; // 清空现有内容
+            
+            // 先按未读消息数量排序，再按最后消息时间排序
+            const sortedContacts = [...chatData.contacts].sort((a, b) => {
+                // 先按未读消息数量降序排序
+                if (b.unread !== a.unread) {
+                    return b.unread - a.unread;
+                }
+                
+                // 如果未读消息数量相同，按最后消息时间排序
+                // 这里简化处理，实际上应该解析时间字符串进行比较
+                return 0; // 保持原有顺序
+            });
+            
+            sortedContacts.forEach(contact => {
+                const badgeHTML = contact.unread > 0 ? 
+                    `<span class="badge">${contact.unread}</span>` : '';
+                
+                const contactHTML = `
+                    <div class="friends">
+                        <a href="chat.html?id=${contact.id}">
+                            <img src="${contact.avatar}" class="avatar" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"48\" height=\"48\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23333\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"></path><circle cx=\"12\" cy=\"7\" r=\"4\"></circle></svg>
+                            <div class="info">
+                                <div class="name">${contact.name}</div>
+                                <div class="message">${contact.lastMessage}</div>
+                            </div>
+                            <span class="time">${contact.lastTime}</span>
+                            ${badgeHTML}
+                        </a>
+                    </div>
+                `;
+                
+                contactList.insertAdjacentHTML('beforeend', contactHTML);
+            });
+        }
+        
+        // 加载联系人选择器
+        function loadContactSelector() {
+            const selector = document.getElementById('contact-selector');
+            selector.innerHTML = ''; // 清空现有内容
+            
+            chatData.contacts.forEach(contact => {
+                const option = document.createElement('option');
+                option.value = contact.id;
+                option.textContent = contact.name;
+                selector.appendChild(option);
+            });
+            
+            // 设置选择器的默认值为配置中的联系人ID
+            const config = DataManager.getAutoMessageConfig();
+            if (config && config.contactId) {
+                selector.value = config.contactId;
+            }
+        }
+        
+        // 生成随机消息
+        function generateRandomMessage(contactId) {
+            // 随机选择一条回复
+            const randomIndex = Math.floor(Math.random() * chatData.randomReplies.length);
+            const replyText = chatData.randomReplies[randomIndex];
+            
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const timeString = `${hours}:${minutes}`;
+            
+            // 创建新消息对象
+            const newMessage = {
+                sender: 'contact',
+                content: replyText,
+                time: timeString
+            };
+            
+            // 使用DataManager添加消息
+            DataManager.addMessage(contactId, newMessage);
+        }
+        
+        // 开始自动生成消息
+        function startAutoMessage() {
+            const interval = parseInt(document.getElementById('auto-message-interval').value) || 10;
+            const contactId = parseInt(document.getElementById('contact-selector').value);
+            
+            // 清除可能存在的旧定时器
+            stopAutoMessage(false); // 不显示提示
+            
+            // 创建新的定时器
+            autoMessageInterval = setInterval(() => {
+                generateRandomMessage(contactId);
+            }, interval * 1000);
+            
+            // 保存自动消息生成配置到 localStorage
+            DataManager.setAutoMessageConfig(true, contactId, interval);
+            
+            alert(`已开启自动生成消息，联系人：${chatData.contacts.find(c => c.id === contactId).name}，间隔${interval}秒`);
+        }
+        
+        // 停止自动生成消息
+        function stopAutoMessage(showAlert = true) {
+            if (autoMessageInterval) {
+                clearInterval(autoMessageInterval);
+                autoMessageInterval = null;
+            }
+            
+            // 更新自动消息生成配置到 localStorage
+            DataManager.setAutoMessageConfig(false);
+            
+            if (showAlert) {
+                alert('已停止自动生成消息');
+            }
+        }
+        
+        // 重置所有数据
+        function resetAllData() {
+            if (confirm('确定要重置所有聊天数据吗？此操作不可恢复！')) {
+                localStorage.removeItem('wechatSimData');
+                location.reload();
+            }
+        }
+        
+        // 恢复自动消息生成状态
+        function restoreAutoMessageState() {
+            // 从 localStorage 获取配置
+            const config = DataManager.getAutoMessageConfig();
+            
+            // 如果配置存在且启用了自动消息生成
+            if (config && config.isEnabled) {
+                // 设置输入框的值
+                document.getElementById('auto-message-interval').value = config.interval;
+                document.getElementById('contact-selector').value = config.contactId;
+                
+                // 清除可能存在的旧定时器
+                if (autoMessageInterval) {
+                    clearInterval(autoMessageInterval);
+                }
+                
+                // 创建新的定时器
+                autoMessageInterval = setInterval(() => {
+                    generateRandomMessage(config.contactId);
+                }, config.interval * 1000);
+                
+                console.log(`已恢复自动生成消息，联系人ID：${config.contactId}，间隔${config.interval}秒`);
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', function() {
+            // 加载联系人列表
+            loadContacts();
+            
+            // 加载联系人选择器
+            loadContactSelector();
+            
+            // 清除活跃聊天状态
+            DataManager.setActiveChat(null);
+            
+            // 定期刷新联系人列表，以显示最新的未读消息数量
+            setInterval(loadContacts, 1000);
+            
+            // 控制面板
+            const showPanelBtn = document.querySelector('.show-panel');
+            const controlPanel = document.querySelector('.control-panel');
+            const startAutoBtn = document.getElementById('start-auto');
+            const stopAutoBtn = document.getElementById('stop-auto');
+            const generateBtn = document.getElementById('generate-message');
+            const resetDataBtn = document.getElementById('reset-data');
+            const closePanelBtn = document.getElementById('close-panel');
+            
+            showPanelBtn.addEventListener('click', function() {
+                controlPanel.style.display = 'block';
+                this.style.display = 'none';
+            });
+            
+            closePanelBtn.addEventListener('click', function() {
+                controlPanel.style.display = 'none';
+                showPanelBtn.style.display = 'flex';
+            });
+            
+            startAutoBtn.addEventListener('click', startAutoMessage);
+            stopAutoBtn.addEventListener('click', function() {
+                stopAutoMessage(true); // 显示提示
+            });
+            
+            generateBtn.addEventListener('click', function() {
+                const contactId = parseInt(document.getElementById('contact-selector').value);
+                generateRandomMessage(contactId);
+                alert(`已为联系人 ${chatData.contacts.find(c => c.id === contactId).name} 生成一条新消息`);
+            });
+            
+            resetDataBtn.addEventListener('click', resetAllData);
+            
+            // 立即恢复自动消息生成状态，添加延迟确保页面完全加载
+            setTimeout(restoreAutoMessageState, 100);
+            
+            // 页面关闭或离开时，保存自动消息生成状态
+            window.addEventListener('beforeunload', function() {
+                // 如果自动消息生成已开启，保存当前配置
+                if (autoMessageInterval) {
+                    const interval = parseInt(document.getElementById('auto-message-interval').value) || 10;
+                    const contactId = parseInt(document.getElementById('contact-selector').value);
+                    DataManager.setAutoMessageConfig(true, contactId, interval);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聊天详情</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body, html {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ededed;
+        }
+        
+        /* 总体 */
+        .wechat {
+            height: 100vh;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: #ededed;
+            position: relative;
+        }
+        
+        /* 头部 */
+        .header {
+            font-size: 17px;
+            font-weight: 500;
+            height: 44px;
+            text-align: center;
+            line-height: 44px;
+            background: #ededed;
+            border-bottom: 1px solid #e0e0e0;
+            z-index: 10;
+            color: #000;
+            position: relative;
+        }
+        
+        .back-icon {
+            position: absolute;
+            left: 15px;
+            top: 13px;
+            width: 18px;
+            height: 18px;
+            opacity: 0.8;
+        }
+        
+        .searching {
+            position: absolute;
+            right: 45px;
+            top: 13px;
+            width: 18px;
+            height: 18px;
+            opacity: 0.8;
+        }
+        
+        .adding {
+            position: absolute;
+            right: 15px;
+            top: 13px;
+            width: 18px;
+            height: 18px;
+            opacity: 0.8;
+        }
+        
+        /* 内容 */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            background-color: #ededed;
+            padding: 10px 0;
+        }
+        
+        .chat-box {
+            padding: 10px;
+        }
+        
+        .message {
+            margin-bottom: 16px;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            clear: both;
+        }
+        
+        .message-content {
+            padding: 10px 12px;
+            border-radius: 4px;
+            max-width: 70%;
+            word-wrap: break-word;
+            position: relative;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+        
+        .left {
+            justify-content: flex-start;
+        }
+        
+        .right {
+            justify-content: flex-end;
+        }
+        
+        .left .message-content {
+            background-color: #fff;
+            margin-left: 10px;
+            border-top-left-radius: 0;
+            color: #333;
+        }
+        
+        .right .message-content {
+            background-color: #95ec69;
+            margin-right: 10px;
+            border-top-right-radius: 0;
+            color: #333;
+        }
+        
+        .timestamp {
+            font-size: 12px;
+            color: #b2b2b2;
+            display: block;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            object-fit: cover;
+            background-color: #f2f2f2;
+        }
+        
+        /* 底部输入框 */
+        .footer {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-top: 1px solid #e0e0e0;
+            position: relative;
+        }
+        
+        .voice-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            opacity: 0.7;
+        }
+        
+        .emoji-icon {
+            width: 24px;
+            height: 24px;
+            margin-left: 10px;
+            opacity: 0.7;
+        }
+        
+        .plus-icon {
+            width: 24px;
+            height: 24px;
+            margin-left: 10px;
+            opacity: 0.7;
+        }
+        
+        .form-control {
+            flex: 1;
+            height: 36px;
+            border: none;
+            border-radius: 4px;
+            padding: 0 12px;
+            font-size: 15px;
+            background-color: #fff;
+            outline: none;
+        }
+        
+        .btn-primary {
+            background-color: #07c160;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            margin-left: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            display: none; /* 默认隐藏，输入内容后显示 */
+        }
+        
+        /* 气泡尖角 */
+        .left .message-content:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -6px;
+            width: 0;
+            height: 0;
+            border-top: 6px solid #fff;
+            border-left: 6px solid transparent;
+        }
+        
+        .right .message-content:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -6px;
+            width: 0;
+            height: 0;
+            border-top: 6px solid #95ec69;
+            border-right: 6px solid transparent;
+        }
+        
+        /* 时间分割线 */
+        .time-divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .time-divider span {
+            background-color: rgba(0, 0, 0, 0.1);
+            color: #fff;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        /* 控制面板 */
+        .control-panel {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: none;
+        }
+        
+        .control-panel button {
+            background-color: #07c160;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            margin: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .control-panel label {
+            display: block;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .control-panel input[type="number"] {
+            width: 60px;
+            padding: 3px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .show-panel {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background-color: #07c160;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 99;
+        }
+    </style>
+</head>
+<body>
+    <!-- 总体 -->
+    <div class="wechat">
+        <!-- 头部 -->
+        <div class="header">
+            <a href="index.html">
+                <svg class="back-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 19L5 12L12 5" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <span id="contact-name">聊天</span>
+            <svg class="searching" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M21 21L16.65 16.65" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="adding" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="#333" stroke-width="2"/>
+                <line x1="12" y1="8" x2="12" y2="16" stroke="#333" stroke-width="2"/>
+                <line x1="8" y1="12" x2="16" y2="12" stroke="#333" stroke-width="2"/>
+            </svg>
+        </div>
+        <!-- 头部 -->
+        <!-- 内容 -->
+        <div class="content">
+            <div class="chat-box" id="chat-box">
+                <!-- 聊天内容将通过JavaScript动态加载 -->
+            </div>
+        </div>
+        <!-- 内容 -->
+        <div class="footer">
+            <svg class="voice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 1C11.2044 1 10.4413 1.31607 9.87868 1.87868C9.31607 2.44129 9 3.20435 9 4V12C9 12.7956 9.31607 13.5587 9.87868 14.1213C10.4413 14.6839 11.2044 15 12 15C12.7956 15 13.5587 14.6839 14.1213 14.1213C14.6839 13.5587 15 12.7956 15 12V4C15 3.20435 14.6839 2.44129 14.1213 1.87868C13.5587 1.31607 12.7956 1 12 1Z" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M19 10V12C19 13.8565 18.2625 15.637 16.9497 16.9497C15.637 18.2625 13.8565 19 12 19C10.1435 19 8.36301 18.2625 7.05025 16.9497C5.7375 15.637 5 13.8565 5 12V10" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 19V23" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 23H16" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <input type="text" class="form-control" placeholder="输入消息...">
+            <svg class="emoji-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 14C8 14 9.5 16 12 16C14.5 16 16 14 16 14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9 9H9.01" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M15 9H15.01" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="plus-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 8V16" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 12H16" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <button class="btn-primary">发送</button>
+        </div>
+    </div>
+    <!-- 总体 -->
+    
+    <!-- 测试控制面板 -->
+    <button class="show-panel">⚙️</button>
+    <div class="control-panel">
+        <label>
+            自动回复间隔(秒):
+            <input type="number" id="auto-reply-interval" min="1" max="60" value="5">
+        </label>
+        <button id="start-auto">开始自动回复</button>
+        <button id="stop-auto">停止自动回复</button>
+        <button id="generate-message">生成一条消息</button>
+        <button id="close-panel">关闭</button>
+    </div>
+    
+    <!-- 引入数据文件 -->
+    <script src="data.js"></script>
+    
+    <script>
+        // 获取URL参数
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        
+        // 当前联系人ID
+        const contactId = parseInt(getUrlParam('id')) || 1;
+        let currentContact = null;
+        let autoReplyInterval = null;
+        
+        // 设置当前活跃聊天
+        DataManager.setActiveChat(contactId);
+        // 清除未读消息计数
+        DataManager.clearUnread(contactId);
+        
+        // 加载联系人信息
+        function loadContactInfo() {
+            currentContact = chatData.contacts.find(contact => contact.id === contactId);
+            if (currentContact) {
+                document.getElementById('contact-name').textContent = currentContact.name;
+                document.title = `与${currentContact.name}的聊天`;
+            }
+        }
+        
+        // 加载聊天记录
+        function loadChatMessages() {
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML = ''; // 清空现有内容
+            
+            const messages = chatData.messages[contactId] || [];
+            if (messages.length === 0) return;
+            
+            // 添加时间分割线
+            let lastDate = '';
+            const now = new Date();
+            const today = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+            
+            messages.forEach((msg, index) => {
+                // 处理时间分割线
+                const msgDate = msg.time.includes('昨天') ? '昨天' : 
+                               msg.time.includes('星期') ? msg.time.split(' ')[0] : 
+                               '今天';
+                
+                if (msgDate !== lastDate) {
+                    const dividerHTML = `
+                        <div class="time-divider">
+                            <span>${msgDate} ${msg.time.split(' ')[1] || msg.time}</span>
+                        </div>
+                    `;
+                    chatBox.insertAdjacentHTML('beforeend', dividerHTML);
+                    lastDate = msgDate;
+                }
+                
+                // 添加消息
+                const messageHTML = createMessageHTML(msg);
+                chatBox.insertAdjacentHTML('beforeend', messageHTML);
+            });
+            
+            // 滚动到底部
+            scrollToBottom();
+        }
+        
+        // 创建消息HTML
+        function createMessageHTML(msg) {
+            const isContact = msg.sender === 'contact';
+            const className = isContact ? 'left' : 'right';
+            const avatar = isContact ? currentContact.avatar : 'https://www.loliapi.com/acg/pp/';
+            const name = isContact && msg.name ? `<div style="font-size:12px;color:#999;margin-bottom:2px;">${msg.name}</div>` : '';
+            
+            return `
+                <div class="message ${className}">
+                    ${isContact ? `<img src="${avatar}" class="avatar" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"48\" height=\"48\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23333\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"></path><circle cx=\"12\" cy=\"7\" r=\"4\"></circle></svg>` : ''}
+                    <div class="message-content">
+                        ${name}
+                        ${msg.content}
+                        <span class="timestamp">${msg.time}</span>
+                    </div>
+                    ${!isContact ? `<img src="${avatar}" class="avatar" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"48\" height=\"48\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23333\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"></path><circle cx=\"12\" cy=\"7\" r=\"4\"></circle></svg>` : ''}
+                </div>
+            `;
+        }
+        
+        // 发送消息
+        function sendMessage(text) {
+            if (!text.trim()) return;
+            
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const timeString = `${hours}:${minutes}`;
+            
+            // 创建新消息对象
+            const newMessage = {
+                sender: 'self',
+                content: text,
+                time: timeString
+            };
+            
+            // 使用DataManager添加消息
+            DataManager.addMessage(contactId, newMessage);
+            
+            // 添加到界面
+            const chatBox = document.getElementById('chat-box');
+            const messageHTML = createMessageHTML(newMessage);
+            chatBox.insertAdjacentHTML('beforeend', messageHTML);
+            
+            // 滚动到底部
+            scrollToBottom();
+            
+            // 清空输入框
+            document.querySelector('.form-control').value = '';
+            document.querySelector('.btn-primary').style.display = 'none';
+            
+            // 如果开启了自动回复，则不需要手动触发回复
+            if (!autoReplyInterval) {
+                // 随机延迟后自动回复
+                setTimeout(generateContactReply, Math.random() * 2000 + 1000);
+            }
+        }
+        
+        // 生成联系人回复
+        function generateContactReply() {
+            // 随机选择一条回复
+            const randomIndex = Math.floor(Math.random() * chatData.randomReplies.length);
+            const replyText = chatData.randomReplies[randomIndex];
+            
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const timeString = `${hours}:${minutes}`;
+            
+            // 创建新消息对象
+            const newMessage = {
+                sender: 'contact',
+                content: replyText,
+                time: timeString
+            };
+            
+            // 使用DataManager添加消息
+            DataManager.addMessage(contactId, newMessage);
+            
+            // 添加到界面
+            const chatBox = document.getElementById('chat-box');
+            const messageHTML = createMessageHTML(newMessage);
+            chatBox.insertAdjacentHTML('beforeend', messageHTML);
+            
+            // 滚动到底部
+            scrollToBottom();
+        }
+        
+        // 滚动到底部
+        function scrollToBottom() {
+            const content = document.querySelector('.content');
+            content.scrollTop = content.scrollHeight;
+        }
+        
+        // 开始自动回复
+        function startAutoReply() {
+            const interval = parseInt(document.getElementById('auto-reply-interval').value) || 5;
+            if (autoReplyInterval) {
+                clearInterval(autoReplyInterval);
+            }
+            
+            autoReplyInterval = setInterval(() => {
+                generateContactReply();
+            }, interval * 1000);
+            
+            alert(`已开启自动回复，间隔${interval}秒`);
+        }
+        
+        // 停止自动回复
+        function stopAutoReply() {
+            if (autoReplyInterval) {
+                clearInterval(autoReplyInterval);
+                autoReplyInterval = null;
+                alert('已停止自动回复');
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', function() {
+            loadContactInfo();
+            loadChatMessages();
+            scrollToBottom();
+            
+            // 输入框获得焦点时显示发送按钮
+            const input = document.querySelector('.form-control');
+            const sendBtn = document.querySelector('.btn-primary');
+            
+            input.addEventListener('input', function() {
+                if (this.value.trim() !== '') {
+                    sendBtn.style.display = 'block';
+                } else {
+                    sendBtn.style.display = 'none';
+                }
+            });
+            
+            // 点击发送按钮发送消息
+            sendBtn.addEventListener('click', function() {
+                const messageText = input.value.trim();
+                if (messageText !== '') {
+                    sendMessage(messageText);
+                }
+            });
+            
+            // 按回车键发送消息
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && this.value.trim() !== '') {
+                    sendMessage(this.value.trim());
+                    e.preventDefault();
+                }
+            });
+            
+            // 控制面板
+            const showPanelBtn = document.querySelector('.show-panel');
+            const controlPanel = document.querySelector('.control-panel');
+            const startAutoBtn = document.getElementById('start-auto');
+            const stopAutoBtn = document.getElementById('stop-auto');
+            const generateBtn = document.getElementById('generate-message');
+            const closePanelBtn = document.getElementById('close-panel');
+            
+            showPanelBtn.addEventListener('click', function() {
+                controlPanel.style.display = 'block';
+                this.style.display = 'none';
+            });
+            
+            closePanelBtn.addEventListener('click', function() {
+                controlPanel.style.display = 'none';
+                showPanelBtn.style.display = 'flex';
+            });
+            
+            startAutoBtn.addEventListener('click', startAutoReply);
+            stopAutoBtn.addEventListener('click', stopAutoReply);
+            generateBtn.addEventListener('click', generateContactReply);
+            
+            // 页面关闭或离开时，只清除当前页面的自动回复定时器，不影响index页面的自动消息生成配置
+            window.addEventListener('beforeunload', function() {
+                // 清除当前页面的自动回复定时器
+                if (autoReplyInterval) {
+                    clearInterval(autoReplyInterval);
+                }
+                
+                // 只清除活跃聊天状态，不影响index页面的自动消息生成配置
+                DataManager.setActiveChat(null);
+            });
+        });
+    </script>
+</body>
+</html>
